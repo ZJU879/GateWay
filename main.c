@@ -59,22 +59,51 @@ bool readbuf(char **buf, char *data, int *head, int *rear, int size){
     return true;
 }
 
+/*
+ *   从字符串中解析出当前的id编号或者类型
+ *  参数说明：
+ *    buf：                 字符串
+ *    device_type：   设备类型
+ *    返回值：返回当前需要操作的目标设备类型
+ */
+int getDevID(char *buf, int device_type){
+    if(device_type==NET){
+
+        return PLC;
+        return BLT;
+    }
+    else if(device_type==PLC||device_type==BLT){
+        return buf[0]-'0';
+    }
+    return ERR;
+}
+
+
+//网络模块初始化，打开发送端口
+void NET_INIT(){
+
+}
+
 //主程序
 int main(){
     //Controller Data Structure 控制器数据结构
+    pthread_t th_listen;
     char buf[DEV_SIZE];
     int device_id;
     int device_type;
-    bt_init();
+    BLT_init();
     PLC_init();
-    Send_init();
+    NET_init();
+    //创建监听线程
+    pthread_create(&th_listen,NULL,listener,0);
+
     while(1){
         //Deal with the blueteeth data recieve
         if(head4bt!=rear4bt){
             //Read data from blueteeth
             readbuf(buf4bt, buf, head4bt, rear4bt, BT_SIZE);
             //Get device ID
-
+            device_id = getDevID(buf,BLT);
             //Send data to the server
             post(buf, device_id, server);
         }
@@ -83,14 +112,14 @@ int main(){
             //Read data from PLC
             readbuf(buf4plc, buf, head4plc, rear4plc, PLC_SIZE);
             //Get device ID
-
+            device_id = getDevID(buf,PLC);
             //Send data to the server
             post(buf, device_id, server);
         }
         //Deal with the HTTP data recieve
         if(flag_rec){
           //Get device ID and judge type
-
+          device_type = getDevID(buf,NET);
           //Send data to the ID
           switch(device_type){
               case PLC:   writebuf(buf2plc, bufrec, head2plc, rear2plc, PLC_SIZE); break;

@@ -1,6 +1,10 @@
+#include <pthread.h>
 #define FREE 0
 #define BLT 1
 #define PLC 2
+#define NET 3
+#define RELEASE 4
+#define ERR 99
 #define MAXSIZE 100
 #define PLC_SIZE 10
 #define BT_SIZE 10
@@ -35,3 +39,8 @@ void Send_init();
 //RingBuffer API
 bool writebuf(char **buf, char *data, int *head, int *rear, int size);
 bool readbuf(char **buf, char *data, int *head, int *rear, int size);
+
+int getDevID(char *buf, int device_type);
+void BLT_init();
+void PLC_init();
+void NET_init();
