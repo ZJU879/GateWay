@@ -1,15 +1,4 @@
-#include     <stdio.h>  
-#include     <stdlib.h>   
-#include     <unistd.h>    
-#include     <sys/types.h>  
-#include     <sys/stat.h>  
-#include     <fcntl.h>   
-#include     <termios.h>  
-#include     <errno.h>  
-
-//data buffer
-char read_buf[256];  
-char write_buf[256] = "lukuan shi shabi AAA"; 
+#include "serial.h"
 
 //init serial 
 int serial_init(char *serial){
@@ -63,55 +52,42 @@ int  serial_read(int fd){
     int len = 0;
     int n = 0;
 
-    while( (n = read(fd, read_buf, sizeof(read_buf))) > 0 )  
+    while( (n = read(fd, plc_read_buf, sizeof(plc_read_buf))) > 0 )  
     {             
             len += n;  
     }
 
-    read_buf[len] = '\0';
+    plc_read_buf[len] = '\0';
+
     return len;
 }
 
 void serial_write(int fd, int len){
     int n;
-    int size=0;
-    while(len>0){
-        n = write(fd, write_buf, len);  
-        len -= n;
-        size += n;
-    }
-    printf("write %d chars\n",size);  
+    // int size=0;
+    // while(len>0){
+        n = write(fd, plc_write_buf, len);  
+        // len -= n;
+        // size += n;
+    // }
+    printf("write %d chars\n",n);  
 
 }
 
-int main()  
-{  
-    int fd;  
-    int i;  
-    int len;  
-    int n = 0;        
-      
-    fd = serial_init("/dev/ttyS0");
-  
-    printf("start send and receive data\n");  
-  
-    // while(1)
-    // {      
-        n = 0;  
-        len = 0;  
+//PLC module
+void PLC_init(){
+    char serial_port = "/dev/ttyS0";
+    fd = serial_init(serial_port);
+}
 
-        // memset(read_buf,sizeof(read_buf),0);
-        // memset(write_buf,sizeof(read_buf),0);
+//send data to plc
+void send2plc(){
+    serial_write(fd,PLC_SIZE);
+}
 
-        len = serial_read(fd);
-                
-        printf("Len: %d \n", len);  
-        printf("%s \n", read_buf);  
-   
-        serial_write(fd,len);
-          
-        sleep(2);  
-    // }  
-    
-    return 0;
-}  
+//get data from plc
+void get4plc(){
+    int bytes;
+    bytes=serial_read(fd);
+    printf("we get %d bytes data!", bytes);
+}
