@@ -92,7 +92,6 @@ void listener(){
     }
 }
 
-
 void *thread_ble(void *tmp){
     ble_fd = BLE_init();
     if( ble_fd == -1 ){
@@ -113,7 +112,7 @@ void *thread_plc(void *tmp){
 }
 
 //主程序
-int main(){
+int main(){	
     //Controller Data Structure 控制器数据结构
     char* server = "IP";
     pthread_t th_listen,th_ble,th_plc;
@@ -121,6 +120,11 @@ int main(){
     int device_id;
     int device_type;
     //BLE_init();
+    pthread_t th_listen;
+    char buf[DEV_SIZE];
+    int device_id;
+    int device_type;
+    BLE_init();
     //PLC_init();
     //NET_init();
     //创建监听线程
@@ -135,18 +139,12 @@ int main(){
             //Get device ID
             device_id = getDevID(buf,BLT);
             printf("%s\n",buf);
-            //Send data to the server
-            post(server, device_id, buf);
-        }
-        //Deal with the PLC data recieve
-        if(head4plc!=head4plc){
-            //Read data from PLC
-            readbuf(buf4plc, buf, &head4plc, &rear4plc, PLC_SIZE);
+            //readbuf(buf4ble, buf, &head4ble, &rear4ble, BT_SIZE);
             //Get device ID
-            device_id = getDevID(buf,PLC);
+            //device_id = getDevID(buf,BLT);
             //Send data to the server
-            post(server, device_id, buf);
-        }
+            //post(server, device_id, buf);
+        		}
         //Deal with the HTTP data recieve
         if(flag_rec){
           //Get device ID and judge type
