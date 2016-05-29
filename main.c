@@ -1,4 +1,5 @@
-#include “flagdef.h”
+#include "flagdef.h"
+#include "http.h"
 
 //blueteeth中断
 //int flag_bt;                        //for controller to check
@@ -84,9 +85,16 @@ void NET_INIT(){
 
 }
 
+void listener(){
+    while(1){
+        sleep(100);
+    }
+}
+
 //主程序
 int main(){
     //Controller Data Structure 控制器数据结构
+    char server = "IP";
     pthread_t th_listen;
     char buf[DEV_SIZE];
     int device_id;
@@ -105,7 +113,7 @@ int main(){
             //Get device ID
             device_id = getDevID(buf,BLT);
             //Send data to the server
-            post(buf, device_id, server);
+            post(server, device_id, buf);
         }
         //Deal with the PLC data recieve
         if(head4plc!=head4plc){
@@ -114,7 +122,7 @@ int main(){
             //Get device ID
             device_id = getDevID(buf,PLC);
             //Send data to the server
-            post(buf, device_id, server);
+            post(server, device_id, buf);
         }
         //Deal with the HTTP data recieve
         if(flag_rec){
