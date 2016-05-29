@@ -11,20 +11,20 @@
 #include <fcntl.h>
 #include <termios.h>
 #define BLE_BAUDRATE B9600 ///Baud rate : 115200
-#define BLE_DEVICE "/dev/ttyAMA0"
+#define BLE_DEVICE "/dev/ttyS0"
 #define BLE_SIZE 512
 #define MAX_BUF_SIZE 512
 
 //The BLE device
-int ble_fd = 0;
+extern int ble_fd;
 
 //For controller to check
 //blueteeth中断
 //extern int flag_bt;                        //for controller to check
-int head4ble, rear4ble;
-int head2ble, rear2ble;
-char buf4ble[MAX_BUF_SIZE][BLE_SIZE];
-char buf2ble[MAX_BUF_SIZE][BLE_SIZE];
+extern int head4ble, rear4ble;
+extern int head2ble, rear2ble;
+extern char buf4ble[MAX_BUF_SIZE][BLE_SIZE];
+extern char buf2ble[MAX_BUF_SIZE][BLE_SIZE];
 
 //init serial
 int serial_init_ble();
@@ -42,6 +42,6 @@ int BLE_init();
 void send2ble();
 
 //get data from ble
-char* get4ble();
+int  get4ble(char *tmp);
 
 #endif

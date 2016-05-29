@@ -1,4 +1,14 @@
 #include "ble.h"
+//The BLE device
+int ble_fd = 0;
+
+//For controller to check
+//blueteeth中断
+//extern int flag_bt;                        //for controller to check
+int head4ble, rear4ble;
+int head2ble, rear2ble;
+char buf4ble[MAX_BUF_SIZE][BLE_SIZE];
+char buf2ble[MAX_BUF_SIZE][BLE_SIZE];
 struct termios stNew;
 struct termios stOld;
 //Open Port & Set Port
@@ -54,6 +64,7 @@ int ble_read(int ble_fd)
     char str[BLE_SIZE];
     while(flag||nRet!=0)
     {
+        printf("wait\n");
         nRet = read(ble_fd, str, BLE_SIZE);
         if(-1 == nRet)
         {
@@ -99,17 +110,17 @@ void send2ble()
 }
 
 //get data from ble
-char* get4ble()
+int get4ble(char* tmp)
 {
     if(rear4ble!=head4ble)
     {
-        char *tmp=buf4ble[rear4ble++];
+        strcpy(*tmp, buf4ble[rear4ble++]);
         if(rear4ble==MAX_BUF_SIZE)
             rear4ble=0;
-        return tmp;
+        return 1;
     }
     else
-        return "";
+        return 0;
 }
 
 void print_buf()
