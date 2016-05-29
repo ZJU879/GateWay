@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <pthread.h>
 #define FREE 0
 #define BLT 1
@@ -34,11 +35,11 @@ void bt_init();
 //LiwenYong
 void PLC_init();
 //QiuYingyue
-void Send_init();
+//void Send_init();
 
 //RingBuffer API
-bool writebuf(char **buf, char *data, int *head, int *rear, int size);
-bool readbuf(char **buf, char *data, int *head, int *rear, int size);
+int writebuf(char **buf, char *data, int *head, int *rear, int size);
+int readbuf(char **buf, char *data, int *head, int *rear, int size);
 
 int getDevID(char *buf, int device_type);
 void BLT_init();

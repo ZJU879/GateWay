@@ -100,7 +100,7 @@ void send2ble()
 
 //get data from ble
 char* get4ble()
-{   
+{
     if(rear4ble!=head4ble)
     {
         char *tmp=buf4ble[rear4ble++];
@@ -113,7 +113,7 @@ char* get4ble()
 }
 
 void print_buf()
-{   
+{
     int i=0;
     for(i=0;i<BLE_SIZE;i++)
     {
@@ -121,7 +121,7 @@ void print_buf()
     }
 }
 
-
+/*
 int main(int argc, char **argv)
 {
     ble_fd=BLE_init();
@@ -129,12 +129,12 @@ int main(int argc, char **argv)
     {
         perror("SerialInit Error!\n");
         return -1;
-    }   
-    
+    }
+
     ble_read(ble_fd);
 
     print_buf();
 
     close(ble_fd);
     return 0;
-}
+}*/
