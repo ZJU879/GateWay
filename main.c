@@ -1,11 +1,13 @@
-#include “flagdef.h”
+#include "flagdef.h"
+#include "http.h"
+#include "ble.h"
 
 //blueteeth中断
 //int flag_bt;                        //for controller to check
-int head4bt = -1, rear4bt = -1;
-int head2bt = -1, rear2bt = -1;
-char buf4bt[MAXSIZE][BT_SIZE];
-char buf2bt[MAXSIZE][BT_SIZE];
+/*int head4ble = -1, rear4ble = -1;
+int head2ble = -1, rear2ble = -1;
+char buf4ble[MAXSIZE][BT_SIZE];
+char buf2ble[MAXSIZE][BT_SIZE];*/
 //PLC
 //int flag_plc;                        //for controller to check
 int head4plc = -1, rear4plc = -1;
@@ -31,14 +33,14 @@ char bufrec[MAXSIZE];       //由主控读取
  *    head：   缓冲区头指针
  *    rear：     缓冲区尾指针
  *    size：     缓冲区大小
- *    返回值：TRUE表示插入成功，FALSE表示满了插入失败
+ *    返回值：1表示插入成功，0表示满了插入失败
  */
-bool writebuf(char **buf, char *data, int *head, int *rear, int size){
-    if(*rear==*head)      return false;
+int writebuf(char **buf, char *data, int *head, int *rear, int size){
+    if(*rear==*head)      return 0;
     *rear = *rear+1;
     if(*rear==size)          *rear = 0;
-    strcpy(buf[rear], data);
-    return true;
+    strcpy(buf[*rear], data);
+    return 1;
 }
 
 /*
@@ -49,14 +51,14 @@ bool writebuf(char **buf, char *data, int *head, int *rear, int size){
  *    head：   缓冲区头指针
  *    rear：     缓冲区尾指针
  *    size：     缓冲区大小
- *    返回值：TRUE表示读取成功，FALSE表示满了读取失败（为空，一般来说先检查是否为空再读就好了）
+ *    返回值：1表示读取成功，0表示满了读取失败（为空，一般来说先检查是否为空再读就好了）
  */
-bool readbuf(char **buf, char *data, int *head, int *rear, int size){
-    if(*rear==*head)      return false;
+int readbuf(char **buf, char *data, int *head, int *rear, int size){
+    if(*rear==*head)      return 0;
     *head = *head+1;
     if(*head==size)          *head = 0;
-    strcpy(data, buf[head]);
-    return true;
+    strcpy(data, buf[*head]);
+    return 1;
 }
 
 /*
@@ -84,37 +86,62 @@ void NET_INIT(){
 
 }
 
+void listener(){
+    while(1){
+        sleep(100);
+    }
+}
+
+
+void *thread_ble(void *tmp){
+    ble_fd = BLE_init();
+    if( ble_fd == -1 ){
+        perror("SerialInit Error!\n");
+        return;
+    }
+
+    ble_read(ble_fd);
+
+    print_buf();
+
+    close(ble_fd);
+    return;
+
+}
+
 //主程序
-int main(){
+int main(){	
     //Controller Data Structure 控制器数据结构
-    pthread_t th_listen;
+    char* server = "IP";
+    pthread_t th_listen,th_ble;
     char buf[DEV_SIZE];
     int device_id;
     int device_type;
-    BLT_init();
-    PLC_init();
-    NET_init();
+    //BLE_init();
+    //PLC_init();
+    //NET_init();
     //创建监听线程
-    pthread_create(&th_listen,NULL,listener,0);
+    //pthread_create(&th_listen,NULL,listener,0);
+    pthread_create(&th_ble, NULL, thread_ble,0);
 
     while(1){
         //Deal with the blueteeth data recieve
-        if(head4bt!=rear4bt){
+        if(head4ble!=rear4ble){
             //Read data from blueteeth
-            readbuf(buf4bt, buf, head4bt, rear4bt, BT_SIZE);
+            //readbuf(buf4ble, buf, &head4ble, &rear4ble, BT_SIZE);
             //Get device ID
-            device_id = getDevID(buf,BLT);
+            //device_id = getDevID(buf,BLT);
             //Send data to the server
-            post(buf, device_id, server);
+            //post(server, device_id, buf);
         }
         //Deal with the PLC data recieve
         if(head4plc!=head4plc){
             //Read data from PLC
-            readbuf(buf4plc, buf, head4plc, rear4plc, PLC_SIZE);
+            readbuf(buf4plc, buf, &head4plc, &rear4plc, PLC_SIZE);
             //Get device ID
             device_id = getDevID(buf,PLC);
             //Send data to the server
-            post(buf, device_id, server);
+            post(server, device_id, buf);
         }
         //Deal with the HTTP data recieve
         if(flag_rec){
@@ -122,8 +149,8 @@ int main(){
           device_type = getDevID(buf,NET);
           //Send data to the ID
           switch(device_type){
-              case PLC:   writebuf(buf2plc, bufrec, head2plc, rear2plc, PLC_SIZE); break;
-              case BT:     writebuf(buf2bt,  bufrec, head2bt,   rear2bt,  BT_SIZE);   break;
+              case PLC:   writebuf(buf2plc, bufrec, &head2plc, &rear2plc, PLC_SIZE); break;
+              case BLT:   writebuf(buf2ble,  bufrec, &head2ble,   &rear2ble,  BT_SIZE);   break;
           }
         }
     }
