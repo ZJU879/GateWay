@@ -1,5 +1,6 @@
 #include "flagdef.h"
 #include "http.h"
+<<<<<<< HEAD
 #include "ble.h"
 
 //blueteeth中断
@@ -8,6 +9,15 @@
 int head2ble = -1, rear2ble = -1;
 char buf4ble[MAXSIZE][BT_SIZE];
 char buf2ble[MAXSIZE][BT_SIZE];*/
+=======
+
+//blueteeth中断
+//int flag_bt;                        //for controller to check
+int head4ble = -1, rear4ble = -1;
+int head2ble = -1, rear2ble = -1;
+char buf4ble[MAXSIZE][BT_SIZE];
+char buf2ble[MAXSIZE][BT_SIZE];
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
 //PLC
 //int flag_plc;                        //for controller to check
 int head4plc = -1, rear4plc = -1;
@@ -92,6 +102,7 @@ void listener(){
     }
 }
 
+<<<<<<< HEAD
 
 void *thread_ble(void *tmp){
     ble_fd = BLE_init();
@@ -109,30 +120,51 @@ void *thread_ble(void *tmp){
 
 }
 
+=======
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
 //主程序
 int main(){	
     //Controller Data Structure 控制器数据结构
     char* server = "IP";
+<<<<<<< HEAD
     pthread_t th_listen,th_ble;
     char buf[DEV_SIZE];
     int device_id;
     int device_type;
     //BLE_init();
+=======
+    pthread_t th_listen;
+    char buf[DEV_SIZE];
+    int device_id;
+    int device_type;
+    BLE_init();
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
     //PLC_init();
     //NET_init();
     //创建监听线程
     //pthread_create(&th_listen,NULL,listener,0);
+<<<<<<< HEAD
     pthread_create(&th_ble, NULL, thread_ble,0);
+=======
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
 
     while(1){
         //Deal with the blueteeth data recieve
         if(head4ble!=rear4ble){
             //Read data from blueteeth
+<<<<<<< HEAD
             //readbuf(buf4ble, buf, &head4ble, &rear4ble, BT_SIZE);
+=======
+            readbuf(buf4ble, buf, &head4ble, &rear4ble, BT_SIZE);
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
             //Get device ID
             //device_id = getDevID(buf,BLT);
             //Send data to the server
+<<<<<<< HEAD
             //post(server, device_id, buf);
+=======
+            post(server, device_id, buf);
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
         }
         //Deal with the PLC data recieve
         if(head4plc!=head4plc){
@@ -150,7 +182,11 @@ int main(){
           //Send data to the ID
           switch(device_type){
               case PLC:   writebuf(buf2plc, bufrec, &head2plc, &rear2plc, PLC_SIZE); break;
+<<<<<<< HEAD
               case BLT:   writebuf(buf2ble,  bufrec, &head2ble,   &rear2ble,  BT_SIZE);   break;
+=======
+              case BLT:     writebuf(buf2ble,  bufrec, &head2ble,   &rear2ble,  BT_SIZE);   break;
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
           }
         }
     }

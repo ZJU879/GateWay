@@ -21,10 +21,17 @@ extern int ble_fd;
 //For controller to check
 //blueteeth中断
 //extern int flag_bt;                        //for controller to check
+<<<<<<< HEAD
 extern int head4ble, rear4ble;
 extern int head2ble, rear2ble;
 extern char buf4ble[MAX_BUF_SIZE][BLE_SIZE];
 extern char buf2ble[MAX_BUF_SIZE][BLE_SIZE];
+=======
+int head4ble, rear4ble;
+int head2ble, rear2ble;
+char buf4ble[MAX_BUF_SIZE][BLE_SIZE];
+char buf2ble[MAX_BUF_SIZE][BLE_SIZE];
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
 
 //init serial
 int serial_init_ble();
@@ -44,4 +51,8 @@ void send2ble();
 //get data from ble
 char* get4ble();
 
+<<<<<<< HEAD
 #endif
+=======
+#endif
+>>>>>>> 6f38eb334226486ff02bc0521c4cf0470c04ba18
